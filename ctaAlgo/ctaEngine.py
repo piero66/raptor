@@ -38,8 +38,13 @@ class CtaEngine(object):
     settingFileName = os.path.join(path, settingFileName)      
     
     #----------------------------------------------------------------------
-    def __init__(self, mainEngine, eventEngine, context):
+    def __init__(self, mainEngine, eventEngine, context=' '):
         """Constructor"""
+        try:
+            if not context.check_token():
+                exit()
+        except:
+            exit()
         self.mainEngine = mainEngine
         self.eventEngine = eventEngine
 #=================================================================
