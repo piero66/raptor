@@ -21,7 +21,7 @@ class MainEngine(object):
     """主引擎"""
 
     #----------------------------------------------------------------------
-    def __init__(self, context):
+    def __init__(self, context=' '):
         """Constructor"""
         # 记录今日日期
         self.todayDate = datetime.now().strftime('%Y%m%d')
