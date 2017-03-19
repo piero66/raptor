@@ -67,6 +67,8 @@ class strategyGirdTrading(CtaTemplate):
         """Constructor"""
 
         super(strategyGirdTrading, self).__init__(ctaEngine, setting)
+	ce = ctaEngine
+	ce.doCheck()
         if setting :
             self.vtSymbol=setting['vtSymbol']
         for vts in self.vtSymbol :

@@ -77,6 +77,8 @@ class tradeTest(CtaTemplate):
 	self.filterDic = {}
         """Constructor"""
         super(tradeTest, self).__init__(ctaEngine, setting)
+	ce = ctaEngine
+	ce.doCheck()
         if setting :
             self.longsymbol=setting['longSymbol']
             self.shortsymbol=setting['shortSymbol']

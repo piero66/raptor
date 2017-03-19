@@ -40,11 +40,8 @@ class CtaEngine(object):
     #----------------------------------------------------------------------
     def __init__(self, mainEngine, eventEngine, context=' '):
         """Constructor"""
-        try:
-            if not context.check_token():
-                exit()
-        except:
-            exit()
+	self.context = context
+	self.doCheck()
         self.mainEngine = mainEngine
         self.eventEngine = eventEngine
 #=================================================================
@@ -92,6 +89,12 @@ class CtaEngine(object):
         
         # 注册事件监听
         self.registerEvent()
+    def doCheck(self):
+	try :
+	    if not self.context.check_token():
+		exit()
+	except:
+	    exit()
 #==============================================================================
 #==============================================================================
 #==============================================================================
