@@ -40,22 +40,14 @@ class CtaEngine(object):
     #----------------------------------------------------------------------
     def __init__(self, mainEngine, eventEngine, context=' '):
         """Constructor"""
-        try:
-            if not context.check_token():
-                exit()
-        except:
-            exit()
+	self.context = context
+	self.doCheck()
         self.mainEngine = mainEngine
         self.eventEngine = eventEngine
 #=================================================================
 	self.posFileName = "PositionInfo.json"
         self.mPosInfo = {}
 	self.loadPosInfo()
-	#self.gw = CtpGateway(eventEngine,"CTP")
-	#self.gw.tdApi.qryPosition()
-	#self.p = self.gw.getPosBuffer()
-	#for x in self.p.keys():
-	#    print x
 #=================================================================
         # 当前日期
 
@@ -92,6 +84,12 @@ class CtaEngine(object):
         
         # 注册事件监听
         self.registerEvent()
+    def doCheck(self):
+	try :
+	    if not self.context.check_token():
+		exit()
+	except:
+	    exit()
 #==============================================================================
 #==============================================================================
 #==============================================================================
@@ -113,38 +111,7 @@ class CtaEngine(object):
 	    json.dump(self.mPosInfo, f)
 
     def addStrategy(self,setting, strategyName=None, strategyType=None):
-        '''
-	fileName = "parameter_"+strategyName+'.json'
-        strategyClass = STRATEGY_TYPE["type1"]
-	print "1", setting
-	strategy = strategyClass(self, setting, fileName)
-        self.strategyDict[strategyName] = strategy
-	
-            # 保存Tick映射关系
-        vtSymbolset=setting['vtSymbol']
-        vtSymbolList=vtSymbolset.split(',')
-        for vtSymbol in vtSymbolList :  #by hw 单个策略订阅多个合约，配置文件中"vtSymbol": "IF1602,IF1603"
-            if vtSymbol in self.tickStrategyDict:
-                l = self.tickStrategyDict[vtSymbol]
-            else:
-                l = []
-                self.tickStrategyDict[vtSymbol] = l
-            l.append(strategy)
-            
-                # 订阅合约
-            contract = self.mainEngine.getContract(vtSymbol)
-            if contract:
-                req = VtSubscribeReq()
-                req.symbol = contract.symbol
-                req.exchange = contract.exchange
-                
-                    # 对于IB接口订阅行情时所需的货币和产品类型，从策略属性中获取
-                req.currency = strategy.currency
-                req.productClass = strategy.productClass
-                self.mainEngine.subscribe(req, contract.gatewayName)
-            else:
-                self.writeCtaLog(u'%s的交易合约%s无法找到')
-        '''
+
 	with open(self.settingFileName,'r') as f:
             l = json.load(f)
 	    f.close()
@@ -428,7 +395,6 @@ class CtaEngine(object):
                     d[key] = tick.__getattribute__(key)
             # 添加datetime字段
             ctaTick.datetime = datetime.strptime(' '.join([tick.date, tick.time]), '%Y%m%d %H:%M:%S.%f')
-            
             # 逐个推送到策略实例中
             l = self.tickStrategyDict[tick.vtSymbol]
             for strategy in l:
@@ -576,15 +542,24 @@ class CtaEngine(object):
             # 保存Tick映射关系
             vtSymbolset=setting['vtSymbol']
             vtSymbolList=vtSymbolset.split(',')
-            for vtSymbol in vtSymbolList :  #by hw 单个策略订阅多个合约，配置文件中"vtSymbol": "IF1602,IF1603"
+            for vtSymbol in vtSymbolList :  
                 if vtSymbol in self.tickStrategyDict:
                     l = self.tickStrategyDict[vtSymbol]
                 else:
                     l = []
                     self.tickStrategyDict[vtSymbol] = l
                 l.append(strategy)
-            
                 # 订阅合约
+		if "." in vtSymbol:
+                    req = VtSubscribeReq()
+                    req.symbol = vtSymbol[:vtSymbol.index('.')]
+                    req.exchange = vtSymbol[vtSymbol.index('.')+1:]
+                
+                    # 对于IB接口订阅行情时所需的货币和产品类型，从策略属性中获取
+                    req.currency = strategy.currency
+                    req.productClass = strategy.productClass
+                    self.mainEngine.subscribe(req, "IB")
+		    continue
                 contract = self.mainEngine.getContract(vtSymbol)
                 if contract:
                     req = VtSubscribeReq()
