@@ -230,6 +230,7 @@ class DataRecorder(CtaTemplate):
     def onTick(self, tick):
         """收到行情TICK推送"""
         # 收到Tick后，首先插入到数据库里
+	'''
         self.insertTick(tick)
         
         # 计算K线
@@ -268,7 +269,8 @@ class DataRecorder(CtaTemplate):
             
             bar.volume = bar.volume + tick.volume   # 成交量是累加的
             bar.openInterest = tick.openInterest    # 持仓量直接更新
-        
+        '''
+	pass
     #----------------------------------------------------------------------
     def onOrder(self, order):
         """收到委托变化推送"""
