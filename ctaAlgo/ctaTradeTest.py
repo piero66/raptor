@@ -132,7 +132,6 @@ class tradeTest(CtaTemplate):
     def onTick(self, tick):
         """收到行情TICK推送（必须由用户继承实现）"""
         # 计算K线
-
 	if not self.isTrade():
 	    return
 	if self.isFilter :
